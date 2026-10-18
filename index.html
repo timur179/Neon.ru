@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090f">
+<title>NEON VAULT — Digital Marketplace</title>
+<style>
+:root {
+  --bg:#09090f;--panel:#11111b;--panel2:#171724;--border:#29293c;
+  --text:#f4f3ff;--muted:#9998b3;--accent:#a855f7;--accent2:#06e6dc;
+  --danger:#ff557b;--success:#46e3a1;--radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent2);outline-offset:3px}
+a{color:inherit;text-decoration:none}
+.topbar{min-height:76px;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:15px;border-bottom:1px solid var(--border);background:#09090fee;position:sticky;top:0;z-index:20;backdrop-filter:blur(18px)}
+.logo{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+.logo-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,#a855f7,#06e6dc);color:#080811;font-size:20px}
+.logo span span{color:var(--accent2)}
+.nav{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.nav button,.icon-btn{background:transparent;border:1px solid transparent;color:var(--muted);padding:10px 12px;border-radius:11px}
+.nav button:hover,.nav button.active{background:var(--panel2);color:var(--text);border-color:var(--border)}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{padding:11px 15px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);color:var(--text);font-weight:700;transition:.2s}
+.btn:hover{transform:translateY(-1px);border-color:var(--accent)}
+.btn-primary{background:linear-gradient(110deg,#a855f7,#7747f5);border-color:transparent;color:white}
+.btn-cyan{background:linear-gradient(110deg,#06b6d4,#06e6dc);color:#061012;border:0}
+.btn-danger{color:#ff91a7;border-color:#63283a;background:#25121b}
+.btn-success{color:var(--success);border-color:#235341;background:#10251e}
+.btn-small{padding:7px 10px;font-size:12px}
+.currency-select{width:auto!important;min-width:88px;padding:9px 8px}
+.mobile-menu{display:none}
+main{max-width:1450px;margin:auto;padding:32px 5% 70px}
+.page{display:none;animation:fade .25s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.hero{position:relative;overflow:hidden;border:1px solid #38304e;border-radius:28px;padding:clamp(28px,5vw,68px);min-height:360px;background:radial-gradient(ellipse at 85% 15%,#522b8566,transparent 36%),radial-gradient(ellipse at 70% 100%,#06e6dc20,transparent 35%),#11111b}
+.hero:after{content:"";position:absolute;width:270px;height:270px;right:7%;top:20%;border-radius:50%;border:1px solid #a855f755;box-shadow:0 0 60px #a855f720,inset 0 0 60px #06e6dc10;pointer-events:none}
+.eyebrow{color:var(--accent2);font-size:12px;letter-spacing:2px;font-weight:900;text-transform:uppercase}
+h1{font-size:clamp(36px,5.5vw,72px);line-height:1.02;letter-spacing:-2px;margin:20px 0}
+.gradient-text{background:linear-gradient(100deg,#d8a5ff,#06e6dc);background-clip:text;color:transparent}
+.hero p{max-width:610px;color:var(--muted);line-height:1.8;font-size:16px}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:22px 0 40px}
+.stat,.card,.product-card,.form-card,.reward-card,.complaint-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.stat{padding:20px}
+.stat strong{display:block;font-size:25px;margin-bottom:5px}
+.stat span{color:var(--muted);font-size:13px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin:36px 0 20px}
+h2{font-size:26px;letter-spacing:-.7px;margin:0}
+h3{margin:0 0 10px;font-size:17px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.catalog-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.field{background:#0c0c14;color:var(--text);border:1px solid var(--border);border-radius:11px;padding:12px 13px;width:100%;min-width:0}
+.field:focus{border-color:var(--accent)}
+.search-field{flex:1;min-width:210px}
+.catalog-toolbar select{width:auto;min-width:150px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.product-card{overflow:hidden;transition:.2s;min-width:0}
+.product-card:hover{transform:translateY(-4px);border-color:#65508c}
+.product-art{height:170px;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden;background:radial-gradient(circle at 30% 30%,#a855f733,transparent 45%),#171724}
+.product-art:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:25px 25px}
+.product-art>*{position:relative}
+.product-art img{width:100%;height:100%;object-fit:cover}
+.product-info{padding:17px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tag{font-size:10px;padding:5px 8px;border:1px solid var(--border);border-radius:7px;color:#c3a6ff}
+.tag.green{color:var(--success);border-color:#235341}
+.product-info p{color:var(--muted);font-size:13px;line-height:1.6;min-height:40px}
+.product-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.price{font-size:21px;font-weight:900}
+.product-actions{display:flex;gap:7px}
+.empty{padding:45px 20px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);grid-column:1/-1}
+.empty .emoji{font-size:38px;margin-bottom:12px}
+.two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;align-items:start}
+.form-card{padding:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:15px;min-width:0}
+.form-group label{font-size:13px;color:#c8c6da;font-weight:650}
+.form-group small{color:var(--muted);line-height:1.5}
+.form-group.full{grid-column:1/-1}
+textarea.field{resize:vertical;min-height:100px}
+.notice{border:1px solid #48406a;background:#191427;color:#cfc1f7;padding:14px;border-radius:12px;line-height:1.65;font-size:13px}
+.notice.warning{border-color:#6d4b2b;background:#241a11;color:#ffd59d}
+.notice.success{border-color:#235341;background:#10251e;color:#a5f6cd}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:12px}
+.list-item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px;border-bottom:1px solid var(--border)}
+.list-item:last-child{border-bottom:0}
+.pill{display:inline-flex;align-items:center;padding:5px 9px;border-radius:8px;background:#242039;color:#d7b8ff;font-size:11px}
+.pill.green{background:#112d23;color:#7bf0b5}
+.pill.orange{background:#302314;color:#ffd28a}
+.pill.red{background:#301620;color:#ff9bb1}
+.cart-layout{display:grid;grid-template-columns:1.5fr .7fr;gap:20px}
+.cart-summary{padding:23px;height:max-content}
+.total-line{display:flex;justify-content:space-between;gap:10px;margin:13px 0;color:var(--muted)}
+.total-line.final{padding-top:15px;border-top:1px solid var(--border);font-size:20px;color:var(--text);font-weight:900}
+.full-btn{width:100%;margin-top:10px}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.reward-card{text-align:center;padding:19px 10px}
+.reward-icon{font-size:35px;margin-bottom:12px}
+.reward-card strong{display:block;font-size:13px}
+.reward-card p{font-size:11px;color:var(--muted);line-height:1.5}
+.complaint-card{padding:18px;margin-bottom:12px}
+.complaint-card p{color:var(--muted);line-height:1.6;font-size:13px}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:600px}
+th,td{text-align:left;padding:14px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600;background:#14141e}
+tr:last-child td{border-bottom:0}
+.ai-box{border:1px solid #53416e;border-radius:20px;padding:23px;background:radial-gradient(ellipse at 100% 0%,#a855f722,transparent 45%),var(--panel)}
+.ai-result{border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:10px}
+.ai-result strong{display:block;margin-bottom:5px}
+.footer{border-top:1px solid var(--border);padding:25px 5%;color:var(--muted);font-size:12px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:99;max-width:min(360px,90vw);padding:15px 19px;background:#20202d;border:1px solid #50466b;border-radius:13px;box-shadow:0 10px 35px #0008;display:none}
+.toast.show{display:block;animation:fade .2s}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:20px;width:min(540px,calc(100% - 28px));padding:24px}
+dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
+dialog h2{margin-bottom:18px}
+.close-row{display:flex;justify-content:flex-end;margin-top:15px}
+hr{border:0;border-top:1px solid var(--border);margin:20px 0}
+.hide{display:none!important}
+body.light{--bg:#f4f3fa;--panel:#fff;--panel2:#eeedf6;--border:#dedbea;--text:#1c1930;--muted:#706b83}
+body.light .topbar{background:#f4f3faee}
+body.light .field{background:#f9f8ff;color:var(--text)}
+body.light .hero{background:radial-gradient(ellipse at 85% 15%,#c9a7ed66,transparent 36%),#fff}
+body.light .hero p{color:#706b83}
+body.light .product-art{background:radial-gradient(circle at 30% 30%,#a855f733,transparent 45%),#eeedf6}
+body.light .notice{color:#4d3d6d}
+@media(max-width:1050px){.nav button{padding:8px;font-size:12px}.topbar{padding:12px 3%}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding-left:3%;padding-right:3%}}
+@media(max-width:760px){.topbar{min-height:68px;flex-wrap:wrap;padding:12px 4%}.mobile-menu{display:block}.nav{display:none;order:3;width:100%;padding-top:10px}.nav.open{display:flex}.nav button{flex:1 0 28%;font-size:12px}.actions .desktop-only{display:none}.stats{grid-template-columns:repeat(2,1fr)}.two-col,.cart-layout{grid-template-columns:1fr}.badge-grid{grid-template-columns:repeat(2,1fr)}.hero:after{opacity:.35;right:-100px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.product-art{height:155px}h2{font-size:23px}.hero{padding:25px}.hero-buttons .btn{width:100%}.logo{font-size:17px}.actions{gap:5px}.actions>.btn{padding:9px 10px}.currency-select{min-width:76px}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="#" class="logo" onclick="showPage('home');return false">
+    <span class="logo-icon">◇</span>
+    <span>NEON <span>VAULT</span></span>
+  </a>
+  <nav class="nav" id="mainNav">
+    <button class="active" data-page="home" onclick="showPage('home')">Главная</button>
+    <button data-page="catalog" onclick="showPage('catalog')">Каталог</button>
+    <button data-page="seller" onclick="showPage('seller')">Продавцу</button>
+    <button data-page="orders" onclick="showPage('orders')">Заказы</button>
+    <button data-page="rewards" onclick="showPage('rewards')">Награды</button>
+    <button data-page="disputes" onclick="showPage('disputes')">Споры</button>
+    <button data-page="admin" onclick="showPage('admin')">Админ</button>
+  </nav>
+  <div class="actions">
+    <select id="currencySelect" class="field currency-select" onchange="changeCurrency(this.value)" aria-label="Валюта" title="Выбрать валюту">
+      <option value="EUR">€ EUR</option>
+      <option value="USD">$ USD</option>
+      <option value="RUB">₽ RUB</option>
+    </select>
+    <button class="btn desktop-only" onclick="toggleTheme()" title="Сменить тему">◐</button>
+    <button class="btn" onclick="showPage('cart')">Корзина <span id="cartCount">0</span></button>
+    <button class="btn mobile-menu" onclick="$('mainNav').classList.toggle('open')">☰</button>
+  </div>
+</header>
+
+<main>
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="eyebrow">THE DIGITAL UNIVERSE · 2026</div>
+    <h1>Твори больше.<br><span class="gradient-text">Создавай будущее.</span></h1>
+    <p>Единая площадка для цифровых продуктов: от веб-шаблонов и дизайна до 3D, музыки, игр, программного кода и образовательных материалов.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-primary" onclick="showPage('catalog')">Исследовать каталог ↗</button>
+      <button class="btn" onclick="showPage('seller')">＋ Стать продавцом</button>
+      <button class="btn" onclick="showPage('ai')">✦ NEON AI</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong id="statProducts">0</strong><span>Товаров в каталоге</span></div>
+    <div class="stat"><strong id="statCategories">15+</strong><span>Категорий цифровых товаров</span></div>
+    <div class="stat"><strong>24 ч</strong><span>Демо-период проверки заказа</span></div>
+    <div class="stat"><strong>∞</strong><span>Возможностей для творчества</span></div>
+  </div>
+  <div class="section-head"><div><div class="eyebrow">HANDPICKED</div><h2 style="margin-top:8px">Популярные продукты</h2></div><button class="btn" onclick="showPage('catalog')">Весь каталог →</button></div>
+  <div class="grid" id="featuredGrid"></div>
+  <div class="section-head"><div><div class="eyebrow">ONE MARKETPLACE</div><h2 style="margin-top:8px">Что можно купить?</h2></div></div>
+  <div class="grid" id="categoryGrid"></div>
+</section>
+
+<section class="page" id="page-catalog">
+  <div class="eyebrow">DISCOVER DIGITAL</div>
+  <h1 style="font-size:clamp(35px,5vw,55px)">Каталог <span class="gradient-text">продуктов</span></h1>
+  <p class="muted">Ищи, фильтруй и находи материалы для своих проектов.</p>
+  <div class="catalog-toolbar">
+    <input class="field search-field" id="search" placeholder="⌕ Поиск товаров, тегов, авторов..." oninput="renderCatalog()">
+    <select class="field" id="categoryFilter" onchange="renderCatalog()"><option value="">Все категории</option></select>
+    <select class="field" id="sortFilter" onchange="renderCatalog()"><option value="popular">Сначала популярные</option><option value="cheap">Сначала дешевле</option><option value="expensive">Сначала дороже</option><option value="new">Сначала новые</option></select>
+  </div>
+  <div class="row" style="margin-bottom:16px"><span class="muted small" id="catalogCount">0 продуктов</span><button class="btn btn-small" onclick="resetFilters()">Сбросить фильтры</button></div>
+  <div class="grid" id="catalogGrid"></div>
+</section>
+
+<section class="page" id="page-seller">
+  <div class="eyebrow">CREATOR STUDIO</div><h1 style="font-size:clamp(35px,5vw,55px)">Твоя студия <span class="gradient-text">продавца</span></h1>
+  <p class="muted">Добавляй цифровые товары и управляй своими публикациями.</p>
+  <div class="two-col" style="margin-top:25px">
+    <div class="form-card">
+      <h2 style="margin-bottom:23px">＋ Опубликовать товар</h2>
+      <form id="productForm">
+        <div class="form-group"><label for="pTitle">Название продукта *</label><input class="field" id="pTitle" maxlength="100" required placeholder="Neon Dashboard UI Kit"></div>
+        <div class="form-grid">
+          <div class="form-group"><label for="pCategory">Категория *</label><select class="field" id="pCategory" required></select></div>
+          <div class="form-group"><label for="pPrice">Цена (EUR) *</label><input class="field" id="pPrice" type="number" min="0.5" max="100000" step="0.01" required placeholder="19.99"></div>
+          <div class="form-group full"><label for="pDescription">Описание *</label><textarea class="field" id="pDescription" required maxlength="1500" placeholder="Что входит в продукт..."></textarea></div>
+          <div class="form-group"><label for="pTags">Теги</label><input class="field" id="pTags" placeholder="neon, ui, modern"></div>
+          <div class="form-group"><label for="pEmoji">Иконка карточки</label><select class="field" id="pEmoji"><option value="✨">✨ Абстракция</option><option value="💻">💻 Код</option><option value="🎨">🎨 Дизайн</option><option value="🧊">🧊 3D</option><option value="🎵">🎵 Аудио</option><option value="🎮">🎮 Игры</option><option value="📚">📚 Обучение</option><option value="🎬">🎬 Видео</option><option value="📦">📦 Другое</option></select></div>
+          <div class="form-group full"><label for="pFile">Файлы продукта</label><input class="field" id="pFile" type="file" multiple><small id="fileHint">Файлы доступны только в текущей сессии.</small></div>
+          <div class="form-group full"><label style="display:flex;align-items:flex-start;gap:9px"><input type="checkbox" id="pRights" required style="margin-top:3px">Я имею право распространять этот контент.</label></div>
+        </div>
+        <button class="btn btn-primary full-btn" type="submit">Опубликовать продукт ↗</button>
+      </form>
+    </div>
+    <div class="stack">
+      <div class="form-card"><div class="eyebrow">YOUR DASHBOARD</div><h2 style="margin:10px 0 22px">Статистика продавца</h2>
+        <div class="stats" style="grid-template-columns:1fr 1fr;margin:0">
+          <div class="stat"><strong id="sellerProducts">0</strong><span>Мои товары</span></div>
+          <div class="stat"><strong id="sellerSales">0</strong><span>Продажи в демо</span></div>
+          <div class="stat"><strong id="sellerRevenue">€0</strong><span>Выручка</span></div>
+          <div class="stat"><strong id="sellerRating">—</strong><span>Рейтинг</span></div>
+        </div>
+      </div>
+      <div class="notice warning"><strong>Важно:</strong> это демонстрационный проект. Для реального маркетплейса нужны сервер, авторизация, безопасное хранение файлов и платёжная система.</div>
+    </div>
+  </div>
+  <div class="section-head"><h2>Мои продукты</h2></div><div class="grid" id="myProductsGrid"></div>
+</section>
+
+<section class="page" id="page-cart">
+  <div class="eyebrow">YOUR SELECTION</div><h1 style="font-size:clamp(35px,5vw,55px)">Твоя <span class="gradient-text">корзина</span></h1>
+  <div class="cart-layout">
+    <div class="form-card" id="cartItems"></div>
+    <div class="form-card cart-summary"><h2>Итого</h2>
+      <div class="total-line"><span>Товары</span><span id="cartSubtotal">€0.00</span></div>
+      <div class="total-line"><span>Комиссия покупателя</span><span id="cartFee">€0.00</span></div>
+      <div class="total-line final"><span>Всего</span><span id="cartTotal">€0.00</span></div>
+      <p class="muted small">Выбранная валюта меняет отображение цен. Базовая валюта товаров — EUR.</p>
+      <button class="btn btn-primary full-btn" onclick="checkoutDemo()">Оформить демо-заказ</button>
+      <button class="btn full-btn" onclick="showPage('catalog')">Продолжить покупки</button>
+    </div>
+  </div>
+  <div class="notice warning" style="margin-top:18px">Демо-заказ не списывает деньги и не предоставляет защищённую загрузку файлов. Не вводи банковские данные.</div>
+</section>
+
+<section class="page" id="page-orders">
+  <div class="eyebrow">PURCHASE HISTORY</div><h1 style="font-size:clamp(35px,5vw,55px)">Мои <span class="gradient-text">заказы</span></h1>
+  <p class="muted">История покупок в демонстрационном режиме.</p>
+  <div class="form-card" style="margin-top:25px;padding:0" id="ordersList"></div>
+  <div class="notice" style="margin-top:18px">Заказы и проверки хранятся только в памяти этой страницы.</div>
+</section>
+
+<section class="page" id="page-ai">
+  <div class="eyebrow">SMART DISCOVERY</div><h1 style="font-size:clamp(35px,5vw,55px)">NEON <span class="gradient-text">AI</span></h1>
+  <p class="muted">Подбери цифровые продукты под задачу.</p>
+  <div class="ai-box" style="margin-top:25px">
+    <div class="form-group"><label for="aiNeed">Что ты хочешь создать?</label><textarea class="field" id="aiNeed" placeholder="Например: сайт для музыкального бренда..." rows="4"></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label for="aiBudget">Бюджет в выбранной валюте</label><select class="field" id="aiBudget" onchange="renderBudgetOptions()"><option value="any">Любой</option><option value="10">До 10</option><option value="25">До 25</option><option value="50">До 50</option><option value="100">До 100</option></select></div>
+      <div class="form-group"><label for="aiType">Категория</label><select class="field" id="aiType"><option value="">Любая категория</option></select></div>
+    </div>
+    <button class="btn btn-primary" onclick="recommendProducts()">✦ Найти подходящие продукты</button><div id="aiResults" style="margin-top:20px"></div>
+  </div>
+  <p class="muted small" style="margin-top:15px">Это локальная демонстрационная рекомендация по ключевым словам, категориям и цене.</p>
+</section>
+
+<section class="page" id="page-rewards">
+  <div class="eyebrow">ACHIEVEMENTS & COLLECTIBLES</div><h1 style="font-size:clamp(35px,5vw,55px)">Твоя коллекция <span class="gradient-text">наград</span></h1>
+  <p class="muted">Значки и коллекционные предметы.</p>
+  <div class="stats"><div class="stat"><strong id="rewardCount">0</strong><span>Открыто наград</span></div><div class="stat"><strong>500 000+</strong><span>Комбинаций</span></div><div class="stat"><strong id="rewardLevel">1</strong><span>Твой уровень</span></div><div class="stat"><strong id="rewardXP">0</strong><span>Очки опыта</span></div></div>
+  <div class="row" style="margin-bottom:17px"><h2>Достижения</h2><button class="btn btn-primary" onclick="claimReward()">✦ Получить награду</button></div>
+  <div class="badge-grid" id="rewardsGrid"></div>
+</section>
+
+<section class="page" id="page-disputes">
+  <div class="eyebrow">TRUST & SAFETY</div><h1 style="font-size:clamp(35px,5vw,55px)">Центр <span class="gradient-text">споров</span></h1>
+  <p class="muted">Сообщай о проблемах с продуктами, покупателями или продавцами.</p>
+  <div class="two-col" style="margin-top:25px">
+    <div class="form-card"><h2 style="margin-bottom:22px">Создать обращение</h2>
+      <form id="complaintForm">
+        <div class="form-group"><label for="cRole">Кто подаёт жалобу?</label><select class="field" id="cRole"><option>Покупатель</option><option>Продавец</option></select></div>
+        <div class="form-group"><label for="cAgainst">На кого жалоба?</label><select class="field" id="cAgainst"><option>Продавец</option><option>Покупатель</option><option>Продукт</option><option>Другое</option></select></div>
+        <div class="form-group"><label for="cOrder">ID заказа</label><input class="field" id="cOrder" placeholder="NV-1001"></div>
+        <div class="form-group"><label for="cReason">Причина</label><select class="field" id="cReason"><option>Продукт не работает</option><option>Продукт не соответствует описанию</option><option>Нарушение авторских прав</option><option>Подозрение на мошенничество</option><option>Нарушение правил поведения</option><option>Другая причина</option></select></div>
+        <div class="form-group"><label for="cDetails">Подробности *</label><textarea class="field" id="cDetails" maxlength="2000" required placeholder="Опиши проблему..."></textarea></div>
+        <div class="form-group"><label for="cEvidence">Доказательства</label><input class="field" id="cEvidence" type="file" multiple><small>Файлы не отправляются на сервер.</small></div>
+        <button class="btn btn-primary full-btn" type="submit">Отправить обращение</button>
+      </form>
+    </div>
+    <div class="form-card"><h2 style="margin-bottom:15px">Принципы рассмотрения</h2><div class="stack"><div class="row"><span>01 · Регистрация</span><span class="pill">Открыто</span></div><div class="row"><span>02 · Проверка доказательств</span><span class="pill orange">На проверке</span></div><div class="row"><span>03 · Решение модератора</span><span class="pill">Ожидание</span></div><div class="row"><span>04 · Апелляция</span><span class="pill">Доступна</span></div></div></div>
+  </div>
+  <div class="section-head"><h2>Мои обращения</h2></div><div id="complaintsList"></div>
+</section>
+
+<section class="page" id="page-admin">
+  <div class="eyebrow">CONTROL CENTER</div><h1 style="font-size:clamp(35px,5vw,55px)">Панель <span class="gradient-text">администратора</span></h1>
+  <div class="notice warning" style="margin:20px 0">Демонстрационная панель без авторизации — не используй её для управления реальными платежами или данными.</div>
+  <div class="stats"><div class="stat"><strong id="adminProducts">0</strong><span>Товаров</span></div><div class="stat"><strong id="adminOrders">0</strong><span>Заказов</span></div><div class="stat"><strong id="adminComplaints">0</strong><span>Обращений</span></div><div class="stat"><strong id="adminSales">€0</strong><span>Демо-оборот</span></div></div>
+  <div class="section-head"><h2>Модерация продуктов</h2></div><div class="table-wrap"><table><thead><tr><th>Продукт</th><th>Категория</th><th>Цена</th><th>Статус</th><th>Действие</th></tr></thead><tbody id="adminProductRows"></tbody></table></div>
+  <div class="section-head"><h2>Центр обращений</h2></div><div id="adminComplaintRows"></div>
+  <div class="section-head"><h2>Сервисные настройки</h2></div>
+  <div class="form-card"><div class="form-grid"><div class="form-group"><label for="commission">Комиссия (%)</label><input class="field" id="commission" type="number" min="0" max="100" value="10"></div><div class="form-group"><label for="reviewHours">Период проверки (часы)</label><input class="field" id="reviewHours" type="number" min="1" max="168" value="24"></div></div><button class="btn btn-primary" onclick="saveSettings()">Сохранить настройки</button>
+  <p class="muted small">Курсы валют задаются в коде и являются демонстрационными.</p></div>
+  <div class="section-head"><h2>Демо-данные</h2></div><div class="form-card"><div class="row"><button class="btn" onclick="exportData()">Экспорт JSON</button><button class="btn btn-danger" onclick="resetDemo()">Сбросить демо</button></div></div>
+</section>
+</main>
+
+<footer class="footer"><div class="row"><span>© 2026 NEON VAULT · Digital goods universe</span><span>Marketplace prototype · Demo mode</span></div></footer>
+<dialog id="productDialog"><div id="productDialogContent"></div><div class="close-row"><button class="btn" onclick="$('productDialog').close()">Закрыть</button></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+const CATEGORIES=[
+{id:"web",name:"Веб-шаблоны",icon:"💻",extensions:["html","htm","css","js","jsx","tsx","vue","svelte","zip"]},
+{id:"ui",name:"UI/UX и дизайн",icon:"🎨",extensions:["fig","figma","sketch","xd","psd","ai","svg","pdf","zip"]},
+{id:"graphics",name:"Графика и иллюстрации",icon:"🖼️",extensions:["png","jpg","jpeg","webp","gif","svg","psd","ai","zip"]},
+{id:"3d",name:"3D-модели",icon:"🧊",extensions:["blend","fbx","obj","stl","glb","gltf","max","zip"]},
+{id:"video",name:"Видео и анимация",icon:"🎬",extensions:["mp4","mov","webm","aep","prproj","gif","zip"]},
+{id:"audio",name:"Музыка и аудио",icon:"🎵",extensions:["wav","mp3","flac","aiff","ogg","mid","midi","zip"]},
+{id:"fonts",name:"Шрифты и иконки",icon:"🔤",extensions:["otf","ttf","woff","woff2","svg","zip"]},
+{id:"documents",name:"Документы и таблицы",icon:"📄",extensions:["pdf","doc","docx","odt","rtf","txt","csv","xls","xlsx","zip"]},
+{id:"presentations",name:"Презентации",icon:"📊",extensions:["ppt","pptx","key","odp","pdf","zip"]},
+{id:"code",name:"Код и библиотеки",icon:"⌘",extensions:["js","ts","py","php","java","go","rs","rb","json","yaml","sql","sh","zip","gz"]},
+{id:"games",name:"Игровые ассеты",icon:"🎮",extensions:["unitypackage","uasset","umap","fbx","obj","png","wav","ogg","zip"]},
+{id:"ebooks",name:"Электронные книги",icon:"📚",extensions:["pdf","epub","mobi","azw3","txt","docx","zip"]},
+{id:"education",name:"Курсы и обучение",icon:"🎓",extensions:["pdf","mp4","mov","pptx","docx","zip"]},
+{id:"cad",name:"CAD и инженерия",icon:"📐",extensions:["dwg","dxf","step","stp","iges","igs","stl","3mf","f3d","zip"]},
+{id:"other",name:"Другие цифровые товары",icon:"📦",extensions:["zip","7z","rar","pdf","txt"]}
+];
+
+const initialProducts=[
+{id:1,title:"Neon Dashboard UI Kit",category:"ui",price:24.99,description:"Современный UI-набор для SaaS-панелей, приложений и цифровых продуктов. Включает набор экранов и повторно используемые компоненты.",seller:"PixelForge",emoji:"🎨",tags:["ui","dashboard","figma"],sales:142,rating:4.9,status:"active",featured:true},
+{id:2,title:"Cyberpunk Landing Page",category:"web",price:19,description:"Неоновая посадочная страница с адаптивной структурой и эффектами для креативных брендов и стартапов.",seller:"NeonLabs",emoji:"💻",tags:["html","landing","neon"],sales:98,rating:4.8,status:"active",featured:true},
+{id:3,title:"Abstract 3D Shapes Vol. 1",category:"3d",price:14.5,description:"Коллекция абстрактных 3D-объектов для обложек, рекламных кампаний и цифровых композиций.",seller:"RenderMind",emoji:"🧊",tags:["3d","blender","abstract"],sales:76,rating:4.7,status:"active",featured:true},
+{id:4,title:"Creator Presentation Pack",category:"presentations",price:9.99,description:"Набор выразительных слайдов для портфолио и презентаций.",seller:"SlideTheory",emoji:"📊",tags:["slides","business","presentation"],sales:63,rating:4.8,status:"active"},
+{id:5,title:"Future Bass Sound Pack",category:"audio",price:12,description:"Пакет музыкальных лупов и звуковых эффектов для видео, игр и музыкальных экспериментов.",seller:"SonicPixel",emoji:"🎵",tags:["music","audio","loops"],sales:121,rating:4.9,status:"active"},
+{id:6,title:"Minimal Icon Collection",category:"fonts",price:7.5,description:"Коллекция минималистичных иконок для интерфейсов, презентаций и цифровых материалов.",seller:"GlyphHouse",emoji:"🔤",tags:["icons","svg","design"],sales:205,rating:4.9,status:"active"},
+{id:7,title:"Indie Game Asset Pack",category:"games",price:18,description:"Стилизованные игровые элементы для прототипов и инди-игр.",seller:"TinyWorlds",emoji:"🎮",tags:["game","assets","indie"],sales:44,rating:4.6,status:"active"},
+{id:8,title:"Python Automation Toolkit",category:"code",price:29,description:"Примеры автоматизации повторяющихся задач и вспомогательные скрипты.",seller:"CodeOrbit",emoji:"⌘",tags:["python","automation","code"],sales:54,rating:4.8,status:"active"},
+{id:9,title:"Editorial Photo Presets",category:"graphics",price:11,description:"Пресеты и рабочие материалы для создания редакционного стиля фотографий.",seller:"FrameTheory",emoji:"🖼️",tags:["photo","presets","creative"],sales:87,rating:4.7,status:"active"},
+{id:10,title:"Productivity Planner",category:"documents",price:6.99,description:"Цифровой планировщик с разделами для целей, задач, привычек и еженедельного обзора.",seller:"DailyForm",emoji:"📄",tags:["planner","productivity","pdf"],sales:174,rating:4.9,status:"active"},
+{id:11,title:"Modern Display Font",category:"fonts",price:15,description:"Выразительный шрифт для заголовков, постеров и брендинга.",seller:"TypeNova",emoji:"🔤",tags:["font","branding","type"],sales:39,rating:4.6,status:"active"},
+{id:12,title:"3D Product Mockup Set",category:"3d",price:22,description:"Набор сцен и объектов для визуализации упаковки и презентации продуктов.",seller:"RenderMind",emoji:"🧊",tags:["mockup","product","render"],sales:32,rating:4.8,status:"active"},
+{id:13,title:"Motion Titles Pack",category:"video",price:16,description:"Набор анимированных заголовков для роликов и презентаций.",seller:"MotionNest",emoji:"🎬",tags:["motion","video","titles"],sales:68,rating:4.7,status:"active"},
+{id:14,title:"CAD Component Starter",category:"cad",price:31,description:"Базовый набор компонентов для проектирования. Проверь размеры и техническую пригодность.",seller:"FormLab",emoji:"📐",tags:["cad","engineering","design"],sales:21,rating:4.5,status:"active"},
+{id:15,title:"Creative Coding Handbook",category:"ebooks",price:8,description:"Цифровое руководство с идеями и упражнениями для творческого программирования.",seller:"OpenCanvas",emoji:"📚",tags:["ebook","creative","coding"],sales:58,rating:4.7,status:"active"},
+{id:16,title:"Design Systems Mini Course",category:"education",price:39,description:"Учебный набор по основам дизайн-систем: токены, компоненты и документация.",seller:"PixelForge",emoji:"🎓",tags:["course","design","systems"],sales:29,rating:4.8,status:"active"}
+];
+
+let products=structuredClone(initialProducts),cart=[],orders=[],complaints=[],rewards=[],xp=0;
+let nextProductId=100,nextOrderId=1001,nextComplaintId=1;
+let settings={commission:10,reviewHours:24};
+let currentCurrency="EUR";
+
+/* Демонстрационные курсы: 1 EUR = 1.08 USD = 95 RUB.
+   Для реального сервиса подключи надёжный источник курсов. */
+const CURRENCY_CONFIG={
+ EUR:{locale:"de-DE",rate:1},
+ USD:{locale:"en-US",rate:1.08},
+ RUB:{locale:"ru-RU",rate:95}
+};
+
+const $=id=>document.getElementById(id);
+const money=n=>{
+ const cfg=CURRENCY_CONFIG[currentCurrency]||CURRENCY_CONFIG.EUR;
+ return new Intl.NumberFormat(cfg.locale,{
+  style:"currency",currency:currentCurrency,
+  minimumFractionDigits:currentCurrency==="RUB"?0:2,
+  maximumFractionDigits:currentCurrency==="RUB"?0:2
+ }).format((Number(n)||0)*cfg.rate);
+};
+
+function changeCurrency(currency){
+ if(!CURRENCY_CONFIG[currency])return;
+ currentCurrency=currency;
+ $("currencySelect").value=currency;
+ renderAll();
+ toast("Валюта изменена: "+currency);
+}
+const categoryOf=id=>CATEGORIES.find(c=>c.id===id)||CATEGORIES[CATEGORIES.length-1];
+const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const productById=id=>products.find(p=>p.id===Number(id));
+const activeProducts=()=>products.filter(p=>p.status==="active");
+
+function toast(message){
+ const el=$("toast");el.textContent=message;el.classList.add("show");
+ clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),3000);
+}
+function showPage(name){
+ if(!$("page-"+name))name="home";
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ $("page-"+name).classList.add("active");
+ document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
+ $("mainNav").classList.remove("open");
+ const renders={catalog:renderCatalog,seller:renderSeller,cart:renderCart,orders:renderOrders,rewards:renderRewards,disputes:renderComplaints,admin:renderAdmin};
+ if(renders[name])renders[name]();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function toggleTheme(){document.body.classList.toggle("light")}
+
+function setupCategorySelects(){
+ const options=CATEGORIES.map(c=>`<option value="${c.id}">${escapeHTML(c.icon)} ${escapeHTML(c.name)}</option>`).join("");
+ $("pCategory").innerHTML=options;
+ $("categoryFilter").innerHTML='<option value="">Все категории</option>'+options;
+ $("aiType").innerHTML='<option value="">Любая категория</option>'+options;
+}
+function productArt(p){
+ return `<div class="product-art">${p.imageData?`<img src="${p.imageData}" alt="${escapeHTML(p.title)}">`:`<span>${escapeHTML(p.emoji||categoryOf(p.category).icon)}</span>`}</div>`;
+}
+function productCard(p){
+ const cat=categoryOf(p.category);
+ return `<article class="product-card">${productArt(p)}<div class="product-info">
+ <div class="tags"><span class="tag">${escapeHTML(cat.name)}</span><span class="tag green">★ ${Number(p.rating||0).toFixed(1)}</span></div>
+ <h3>${escapeHTML(p.title)}</h3><div class="muted small">Автор: ${escapeHTML(p.seller||"Creator")}</div>
+ <p>${escapeHTML(p.description)}</p><div class="muted small">${escapeHTML((p.tags||[]).slice(0,4).join(" · "))}</div>
+ <div class="product-bottom"><span class="price">${money(p.price)}</span><div class="product-actions">
+ <button class="btn btn-small" onclick="openProduct(${p.id})">↗</button><button class="btn btn-small btn-primary" onclick="addToCart(${p.id})">＋</button>
+ </div></div></div></article>`;
+}
+function renderHome(){
+ $("featuredGrid").innerHTML=activeProducts().filter(p=>p.featured).slice(0,3).map(productCard).join("")||'<div class="empty">Пока нет товаров.</div>';
+ $("categoryGrid").innerHTML=CATEGORIES.slice(0,6).map(c=>`<button class="card" style="padding:20px;text-align:left;color:var(--text)" onclick="filterCategory('${c.id}')"><div style="font-size:30px;margin-bottom:12px">${c.icon}</div><strong>${escapeHTML(c.name)}</strong><div class="muted small" style="margin-top:7px">Исследовать категорию ↗</div></button>`).join("");
+ $("statProducts").textContent=activeProducts().length;$("statCategories").textContent=CATEGORIES.length+"+";
+}
+function renderCatalog(){
+ const q=$("search").value.trim().toLowerCase(),cat=$("categoryFilter").value,sort=$("sortFilter").value;
+ let list=activeProducts().filter(p=>{
+ const text=[p.title,p.description,p.seller,categoryOf(p.category).name,...(p.tags||[])].join(" ").toLowerCase();
+ return(!q||text.includes(q))&&(!cat||p.category===cat);
+ });
+ if(sort==="cheap")list.sort((a,b)=>a.price-b.price);
+ if(sort==="expensive")list.sort((a,b)=>b.price-a.price);
+ if(sort==="popular")list.sort((a,b)=>(b.sales||0)-(a.sales||0));
+ if(sort==="new")list.sort((a,b)=>b.id-a.id);
+ $("catalogCount").textContent=`Найдено: ${list.length}`;
+ $("catalogGrid").innerHTML=list.map(productCard).join("")||'<div class="empty"><div class="emoji">⌕</div>Ничего не найдено. Измени поиск или фильтры.</div>';
+}
+function resetFilters(){$("search").value="";$("categoryFilter").value="";$("sortFilter").value="popular";renderCatalog()}
+function filterCategory(id){$("categoryFilter").value=id;showPage("catalog")}
+
+function openProduct(id){
+ const p=productById(id);if(!p)return;
+ $("productDialogContent").innerHTML=`${productArt(p)}
+ <div class="tags" style="margin-top:15px"><span class="tag">${escapeHTML(categoryOf(p.category).name)}</span><span class="tag green">★ ${Number(p.rating||0).toFixed(1)}</span></div>
+ <h2>${escapeHTML(p.title)}</h2><p class="muted">Автор: ${escapeHTML(p.seller||"Creator")}</p>
+ <p style="line-height:1.8">${escapeHTML(p.description)}</p><p class="muted small">Теги: ${escapeHTML((p.tags||[]).join(", ")||"—")}</p>
+ <div class="row" style="margin-top:18px"><span class="price">${money(p.price)}</span><button class="btn btn-primary" onclick="addToCart(${p.id});$('productDialog').close()">＋ В корзину</button></div>`;
+ $("productDialog").showModal();
+}
+function addToCart(id){
+ const p=productById(id);
+ if(!p||p.status!=="active"){toast("Этот продукт недоступен.");return}
+ if(cart.includes(Number(id))){toast("Товар уже в корзине.");return}
+ cart.push(Number(id));updateCartCount();toast("Добавлено в корзину: "+p.title);
+}
+function removeFromCart(id){cart=cart.filter(x=>x!==Number(id));renderCart();updateCartCount()}
+function updateCartCount(){$("cartCount").textContent=cart.length}
+function renderCart(){
+ const items=cart.map(productById).filter(p=>p&&p.status==="active");
+ cart=items.map(p=>p.id);
+ const subtotal=items.reduce((s,p)=>s+p.price,0),fee=subtotal*settings.commission/100,total=subtotal+fee;
+ $("cartSubtotal").textContent=money(subtotal);$("cartFee").textContent=money(fee);$("cartTotal").textContent=money(total);
+ $("cartItems").innerHTML=items.length?items.map(p=>`<div class="list-item"><div style="display:flex;align-items:center;gap:12px;min-width:0"><div style="font-size:30px">${escapeHTML(p.emoji||categoryOf(p.category).icon)}</div><div><strong>${escapeHTML(p.title)}</strong><div class="muted small">${escapeHTML(categoryOf(p.category).name)}</div><div style="margin-top:6px;font-weight:800">${money(p.price)}</div></div></div><button class="btn btn-small btn-danger" onclick="removeFromCart(${p.id})">Удалить</button></div>`).join(""):'<div class="empty"><div class="emoji">🛒</div>Корзина пока пуста.<br><button class="btn" style="margin-top:15px" onclick="showPage(\'catalog\')">Перейти в каталог</button></div>';
+}
+function checkoutDemo(){
+ const items=cart.map(productById).filter(p=>p&&p.status==="active");
+ if(!items.length){toast("Добавь товары в корзину.");return}
+ if(!confirm("Создать демонстрационный заказ без реального списания денег?"))return;
+ const subtotal=items.reduce((s,p)=>s+p.price,0);
+ const total=subtotal*(1+settings.commission/100);
+ orders.unshift({id:"NV-"+nextOrderId++,items:items.map(p=>({id:p.id,title:p.title,price:p.price,seller:p.seller,category:p.category})),total,createdAt:new Date().toISOString(),status:"review",reviewUntil:new Date(Date.now()+settings.reviewHours*3600000).toISOString(),currencyAtPurchase:currentCurrency,checks:{}});
+ items.forEach(p=>p.sales=(p.sales||0)+1);
+ cart=[];updateCartCount();renderAll();toast("Демо-заказ создан.");showPage("orders");
+}
+function renderOrders(){
+ if(!orders.length){$("ordersList").innerHTML='<div class="empty"><div class="emoji">📦</div>Пока нет заказов.</div>';return}
+ $("ordersList").innerHTML=orders.map(o=>{
+ const checked=Object.values(o.checks||{}).filter(Boolean).length;
+ const status=o.status==="review"?"Ожидает проверки":o.status==="approved"?"Подтверждён покупателем":o.status==="issue"?"Есть проблема":"В споре";
+ const pill=o.status==="approved"?"green":o.status==="issue"?"red":"orange";
+ return `<div style="padding:20px;border-bottom:1px solid var(--border)"><div class="row"><div><strong>${escapeHTML(o.id)}</strong><div class="muted small">${new Date(o.createdAt).toLocaleString("ru-RU")}</div></div><span class="pill ${pill}">${status}</span></div>
+ ${o.items.map(item=>`<div class="list-item" style="padding-left:0;padding-right:0"><div><strong>${escapeHTML(item.title)}</strong><div class="muted small">${escapeHTML(categoryOf(item.category).name)} · ${escapeHTML(item.seller)}</div></div><strong>${money(item.price)}</strong></div>`).join("")}
+ <div class="row" style="margin-top:15px"><strong>Итого: ${money(o.total)}</strong><span class="muted small">Проверено: ${checked}/${o.items.length}</span></div>
+ ${o.status==="review"?`<div class="notice" style="margin-top:13px">Срок проверки: ${new Date(o.reviewUntil).toLocaleString("ru-RU")}</div><div class="row" style="margin-top:12px"><button class="btn btn-success" onclick="reviewOrder('${o.id}',true)">✓ Всё работает</button><button class="btn btn-danger" onclick="reviewOrder('${o.id}',false)">✕ Есть проблема</button></div>`:""}
+ </div>`;
+ }).join("");
+}
+function reviewOrder(id,works){
+ const o=orders.find(o=>o.id===id);if(!o||o.status!=="review")return;
+ if(works){o.status="approved";o.checks=Object.fromEntries(o.items.map(i=>[i.id,true]));toast("Заказ подтверждён.")}
+ else{o.status="issue";o.checks=Object.fromEntries(o.items.map(i=>[i.id,false]));complaints.unshift({id:nextComplaintId++,role:"Покупатель",against:"Продавец",orderId:id,reason:"Продукт не работает",details:"Покупатель отметил, что продукт не работает. Требуется проверка.",status:"open",createdAt:new Date().toISOString(),evidenceCount:0});toast("Создано обращение.")}
+ renderOrders();renderComplaints();renderAdmin();
+}
+function renderSeller(){
+ const mine=products.filter(p=>p.seller==="You"),sales=orders.flatMap(o=>o.items).filter(i=>i.seller==="You");
+ $("sellerProducts").textContent=mine.length;$("sellerSales").textContent=sales.length;
+ $("sellerRevenue").textContent=money(sales.reduce((s,i)=>s+i.price,0));$("sellerRating").textContent=mine.length?"New":"—";
+ $("myProductsGrid").innerHTML=mine.map(productCard).join("")||'<div class="empty"><div class="emoji">✦</div>Ты ещё не опубликовал продукты.</div>';
+}
+function updateFileHint(){
+ const cat=categoryOf($("pCategory").value);
+ $("fileHint").textContent="Допустимые расширения: "+cat.extensions.map(x=>"."+x).join(", ")+". Лимит демо — 20 МБ на файл.";
+}
+$("pCategory").addEventListener("change",updateFileHint);
+function readFileAsDataURL(file){
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)});
+}
+$("productForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const title=$("pTitle").value.trim(),description=$("pDescription").value.trim(),category=$("pCategory").value,price=Number($("pPrice").value);
+ if(!title||!description||!Number.isFinite(price)||price<.5){toast("Проверь название, описание и цену.");return}
+ const files=Array.from($("pFile").files||[]),allowed=categoryOf(category).extensions;
+ for(const file of files){
+  const ext=file.name.includes(".")?file.name.split(".").pop().toLowerCase():"";
+  if(!allowed.includes(ext)){toast(`Файл ${file.name}: расширение не подходит категории.`);return}
+  if(file.size>20*1024*1024){toast("Размер одного файла не должен превышать 20 МБ.");return}
+ }
+ let imageData=null;
+ const imageFile=files.find(f=>/^image\/(png|jpeg|webp|gif)$/.test(f.type));
+ if(imageFile){try{imageData=await readFileAsDataURL(imageFile)}catch{toast("Не удалось прочитать изображение.");return}}
+ products.unshift({id:nextProductId++,title,category,price,description,seller:"You",emoji:$("pEmoji").value,tags:$("pTags").value.split(",").map(t=>t.trim()).filter(Boolean).slice(0,12),sales:0,rating:0,status:"active",featured:false,imageData,fileNames:files.map(f=>f.name),fileSizes:files.map(f=>f.size)});
+ $("productForm").reset();updateFileHint();renderAll();toast("Продукт опубликован в демо-каталоге.");
+});
+function renderBudgetOptions(){
+ const label=currentCurrency==="EUR"?"€":currentCurrency==="USD"?"$":"₽";
+ const sel=$("aiBudget");
+ [...sel.options].forEach((o,i)=>{if(i===0)o.textContent="Любой";else o.textContent="До "+label+o.value});
+}
+function recommendProducts(){
+ const query=$("aiNeed").value.toLowerCase().trim(),budget=$("aiBudget").value,type=$("aiType").value;
+ const budgetEUR=budget==="any"?Infinity:Number(budget)/CURRENCY_CONFIG[currentCurrency].rate;
+ const words=query.split(/[^a-zа-яё0-9]+/i).filter(w=>w.length>2);
+ const scored=activeProducts().map(p=>{
+  const hay=[p.title,p.description,p.seller,categoryOf(p.category).name,...(p.tags||[])].join(" ").toLowerCase();
+  let score=0;words.forEach(w=>{if(hay.includes(w))score+=2});
+  if(type&&p.category===type)score+=5;
+  if(budget!=="any"&&p.price<=budgetEUR)score+=2;
+  if(budget!=="any"&&p.price>budgetEUR)score-=3;
+  score+=(p.sales||0)/100;return{p,score};
+ }).sort((a,b)=>b.score-a.score).slice(0,5);
+ $("aiResults").innerHTML=scored.length?'<h3>Подборка для тебя</h3>'+scored.map(({p,score},i)=>`<div class="ai-result"><div class="row"><strong>${i+1}. ${escapeHTML(p.title)}</strong><span class="pill">${Math.max(1,Math.round(score*10))}% match*</span></div><div class="muted small" style="margin:7px 0">${escapeHTML(categoryOf(p.category).name)} · ${money(p.price)}</div><p class="muted small">${escapeHTML(p.description)}</p><button class="btn btn-small btn-primary" onclick="addToCart(${p.id})">＋ В корзину</button> <button class="btn btn-small" onclick="openProduct(${p.id})">Подробнее</button></div>`).join("")+'<p class="muted small">* Условный показатель демо-алгоритма.</p>':'<div class="empty">Нет подходящих продуктов.</div>';
+}
+const rewardTraits={rarity:["Common","Uncommon","Rare","Epic","Legendary"],material:["Chrome","Prism","Obsidian","Holographic","Quantum"],element:["Neon","Cosmic","Cyber","Aurora","Void"],symbol:["◇","✦","⬡","✧","◈","⟡","◎","△","◉","✺"]};
+function generateReward(index){return{id:"NV-"+(index+1),rarity:rewardTraits.rarity[index%5],material:rewardTraits.material[(index*3)%5],element:rewardTraits.element[(index*7)%5],symbol:rewardTraits.symbol[(index*11)%10]}}
+function rewardName(r){return r.element+" "+r.material}
+function renderRewards(){
+ $("rewardCount").textContent=rewards.length;$("rewardXP").textContent=xp;$("rewardLevel").textContent=Math.floor(xp/100)+1;
+ const fixed=[{icon:"🌱",name:"Первый шаг",desc:"Исследуй маркетплейс",xp:10},{icon:"🛍️",name:"Исследователь",desc:"Добавь товар в корзину",xp:20},{icon:"🚀",name:"Creator",desc:"Опубликуй продукт",xp:50},{icon:"🛡️",name:"Покупатель",desc:"Проверь заказ",xp:30}];
+ const earned=[...fixed.slice(0,Math.min(rewards.length,fixed.length)),...rewards.map(r=>({icon:r.symbol,name:rewardName(r),desc:r.rarity+" · "+r.material+" · "+r.id,xp:0}))];
+ $("rewardsGrid").innerHTML=earned.length?earned.map(r=>`<div class="reward-card"><div class="reward-icon">${escapeHTML(r.icon)}</div><strong>${escapeHTML(r.name)}</strong><p>${escapeHTML(r.desc)}</p>${r.xp?`<span class="pill green">+${r.xp} XP</span>`:""}</div>`).join(""):'<div class="empty">Наград пока нет.</div>';
+}
+function claimReward(){
+ const r=generateReward(rewards.length+Math.floor(Math.random()*10000));
+ if(rewards.some(x=>x.id===r.id)){toast("Эта награда уже есть.");return}
+ rewards.push(r);xp+=25;renderRewards();toast("Новая награда: "+rewardName(r));
+}
+$("complaintForm").addEventListener("submit",e=>{
+ e.preventDefault();const details=$("cDetails").value.trim();if(!details){toast("Добавь описание обращения.");return}
+ complaints.unshift({id:nextComplaintId++,role:$("cRole").value,against:$("cAgainst").value,orderId:$("cOrder").value.trim(),reason:$("cReason").value,details,status:"open",createdAt:new Date().toISOString(),evidenceCount:($("cEvidence").files||[]).length});
+ $("complaintForm").reset();renderComplaints();renderAdmin();toast("Обращение зарегистрировано.");
+});
+function complaintStatus(c){
+ return c.status==="open"?'<span class="pill orange">Открыто</span>':c.status==="review"?'<span class="pill">На проверке</span>':c.status==="appeal"?'<span class="pill orange">Апелляция</span>':'<span class="pill green">Закрыто</span>';
+}
+function renderComplaints(){
+ $("complaintsList").innerHTML=complaints.length?complaints.map(c=>`<article class="complaint-card"><div class="row"><strong>Обращение #${c.id} · ${escapeHTML(c.reason)}</strong>${complaintStatus(c)}</div><p>${escapeHTML(c.details)}</p><div class="muted small">Автор: ${escapeHTML(c.role)} · Жалоба на: ${escapeHTML(c.against)} · Заказ: ${escapeHTML(c.orderId||"не указан")}</div><div class="muted small" style="margin-top:6px">Создано: ${new Date(c.createdAt).toLocaleString("ru-RU")} · Файлов: ${c.evidenceCount}</div>${c.status==="closed"?`<button class="btn btn-small" style="margin-top:12px" onclick="appealComplaint(${c.id})">Подать апелляцию</button>`:""}</article>`).join(""):'<div class="empty">Обращений пока нет.</div>';
+}
+function appealComplaint(id){const c=complaints.find(x=>x.id===id);if(!c)return;c.status="appeal";renderComplaints();renderAdmin();toast("Апелляция зарегистрирована.")}
+function moderateComplaint(id,status){const c=complaints.find(x=>x.id===id);if(!c)return;c.status=status;renderAdmin();renderComplaints();toast("Статус обращения обновлён.")}
+function renderAdmin(){
+ $("adminProducts").textContent=products.length;$("adminOrders").textContent=orders.length;$("adminComplaints").textContent=complaints.length;$("adminSales").textContent=money(orders.reduce((s,o)=>s+o.total,0));
+ $("adminProductRows").innerHTML=products.map(p=>`<tr><td><strong>${escapeHTML(p.title)}</strong><div class="muted small">${escapeHTML(p.seller)}</div></td><td>${escapeHTML(categoryOf(p.category).name)}</td><td>${money(p.price)}</td><td>${p.status==="active"?'<span class="pill green">Активен</span>':'<span class="pill red">Скрыт</span>'}</td><td><button class="btn btn-small" onclick="toggleProductStatus(${p.id})">${p.status==="active"?"Скрыть":"Опубликовать"}</button></td></tr>`).join("")||'<tr><td colspan="5">Нет товаров.</td></tr>';
+ $("adminComplaintRows").innerHTML=complaints.length?complaints.map(c=>`<article class="complaint-card"><div class="row"><strong>#${c.id} · ${escapeHTML(c.reason)}</strong>${complaintStatus(c)}</div><p>${escapeHTML(c.details)}</p><div class="muted small">${escapeHTML(c.role)} → ${escapeHTML(c.against)} · ${escapeHTML(c.orderId||"Без ID заказа")}</div><div class="row" style="margin-top:12px"><button class="btn btn-small" onclick="moderateComplaint(${c.id},'review')">На проверку</button><button class="btn btn-small" onclick="moderateComplaint(${c.id},'closed')">Закрыть</button><button class="btn btn-small" onclick="moderateComplaint(${c.id},'appeal')">Апелляция</button></div></article>`).join(""):'<div class="empty">Нет обращений.</div>';
+}
+function toggleProductStatus(id){const p=productById(id);if(!p)return;p.status=p.status==="active"?"hidden":"active";renderAll();toast("Статус продукта изменён.")}
+function saveSettings(){
+ settings.commission=Math.min(100,Math.max(0,Number($("commission").value)||0));
+ settings.reviewHours=Math.min(168,Math.max(1,Number($("reviewHours").value)||24));
+ renderCart();toast("Демо-настройки сохранены.");
+}
+function exportData(){
+ const data={products,orders,complaints,rewards,xp,settings,currentCurrency,exportedAt:new Date().toISOString()};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="neon-vault-demo.json";a.click();URL.revokeObjectURL(url);
+}
+function resetDemo(){
+ if(!confirm("Сбросить товары, заказы, обращения и награды?"))return;
+ products=structuredClone(initialProducts);cart=[];orders=[];complaints=[];rewards=[];xp=0;
+ nextProductId=100;nextOrderId=1001;nextComplaintId=1;settings={commission:10,reviewHours:24};
+ $("commission").value=10;$("reviewHours").value=24;
+ renderAll();showPage("home");toast("Демо-данные сброшены.");
+}
+function renderAll(){renderHome();renderCatalog();renderSeller();renderCart();renderOrders();renderRewards();renderComplaints();renderAdmin();renderBudgetOptions()}
+
+setupCategorySelects();updateFileHint();renderAll();
+</script>
+</body>
+</html>
