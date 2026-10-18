@@ -137,7 +137,12 @@ body.light .notice{color:#4d3d6d}
 @media(max-width:1050px){.nav button{padding:8px;font-size:12px}.topbar{padding:12px 3%}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding-left:3%;padding-right:3%}}
 @media(max-width:760px){.topbar{min-height:68px;flex-wrap:wrap;padding:12px 4%}.mobile-menu{display:block}.nav{display:none;order:3;width:100%;padding-top:10px}.nav.open{display:flex}.nav button{flex:1 0 28%;font-size:12px}.actions .desktop-only{display:none}.stats{grid-template-columns:repeat(2,1fr)}.two-col,.cart-layout{grid-template-columns:1fr}.badge-grid{grid-template-columns:repeat(2,1fr)}.hero:after{opacity:.35;right:-100px}}
 @media(max-width:480px){.grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.product-art{height:155px}h2{font-size:23px}.hero{padding:25px}.hero-buttons .btn{width:100%}.logo{font-size:17px}.actions{gap:5px}.actions>.btn{padding:9px 10px}.currency-select{min-width:76px}}
+
+.auth-overlay{position:fixed;inset:0;z-index:100;background:#05050be8;display:grid;place-items:center;padding:20px;backdrop-filter:blur(12px)}
+.auth-card{position:relative;width:min(100%,430px);padding:28px;border:1px solid var(--border);border-radius:20px;background:var(--panel);box-shadow:0 24px 90px #0008}
+.auth-card h2{margin:10px 0}.auth-card .form-group{display:grid;gap:7px;margin:15px 0}.auth-card .field{width:100%;padding:12px;border-radius:10px;background:var(--panel2);color:var(--text);border:1px solid var(--border)}.auth-close{position:absolute;right:14px;top:14px}.auth-card .muted{color:var(--muted);line-height:1.5}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -167,6 +172,21 @@ body.light .notice{color:#4d3d6d}
   </div>
 </header>
 
+
+<div id="adminAuthModal" class="auth-overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="adminAuthTitle">
+  <div class="auth-card">
+    <button class="icon-btn auth-close" onclick="closeAdminAuth()" aria-label="Закрыть">✕</button>
+    <div class="eyebrow">SECURE ACCESS</div>
+    <h2 id="adminAuthTitle">Вход администратора</h2>
+    <p class="muted">Войди через аккаунт, созданный в Supabase и добавленный в список администраторов.</p>
+    <form onsubmit="adminLogin(event)">
+      <label class="form-group"><span>Email</span><input class="field" id="adminEmail" type="email" autocomplete="username" required></label>
+      <label class="form-group"><span>Пароль</span><input class="field" id="adminPassword" type="password" autocomplete="current-password" required></label>
+      <p id="adminAuthError" class="notice warning" style="display:none"></p>
+      <button class="btn primary" type="submit" style="width:100%">Войти</button>
+    </form>
+  </div>
+</div>
 <main>
 <section class="page active" id="page-home">
   <div class="hero">
@@ -400,7 +420,43 @@ function toast(message){
  const el=$("toast");el.textContent=message;el.classList.add("show");
  clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),3000);
 }
+let neonSupabase = null;
+let adminSession = null;
+let isVerifiedAdmin = false;
+try {
+ if (window.supabase?.createClient) neonSupabase = window.supabase.createClient(
+  "https://kzvzepsjjefnhfgwrrxx.supabase.co",
+  "sb_publishable_sOSJFFOUZMp2B01KYgZN7w_Y3EZj-4e"
+ );
+} catch (e) { console.error("Supabase init failed", e); }
+function openAdminAuth(message="Войди, чтобы продолжить.") {
+ $("adminAuthModal").style.display="grid";
+ $("adminAuthError").style.display=message ? "block" : "none";
+ $("adminAuthError").textContent=message;
+}
+function closeAdminAuth(){ $("adminAuthModal").style.display="none"; }
+async function adminLogin(event){
+ event.preventDefault();
+ const error=$("adminAuthError"), button=event.submitter;
+ error.style.display="block";error.textContent="Проверяем доступ…";if(button)button.disabled=true;
+ try {
+  if(!neonSupabase) throw new Error("Не удалось подключить сервис входа. Обнови страницу и попробуй снова.");
+  const {data,error:loginError}=await neonSupabase.auth.signInWithPassword({email:$("adminEmail").value.trim(),password:$("adminPassword").value});
+  if(loginError) throw loginError;
+  const {data:membership,error:membershipError}=await neonSupabase.from("admin_users").select("user_id").eq("user_id",data.user.id).maybeSingle();
+  if(membershipError) throw new Error("Не настроена таблица прав администратора в Supabase. Выполни SQL из файла supabase-admin-setup.sql.");
+  if(!membership) { await neonSupabase.auth.signOut(); throw new Error("У этого аккаунта нет прав администратора."); }
+  adminSession=data.session;isVerifiedAdmin=true;closeAdminAuth();showPage("admin");
+  toast("Вход администратора выполнен.");
+ } catch(e) { error.textContent=e.message||"Не удалось войти.";error.style.display="block"; }
+ finally { if(button)button.disabled=false; }
+}
+async function adminLogout(){
+ if(neonSupabase) await neonSupabase.auth.signOut();
+ adminSession=null;isVerifiedAdmin=false;showPage("home");toast("Ты вышел из панели администратора.");
+}
 function showPage(name){
+ if(name==="admin"&&!isVerifiedAdmin){openAdminAuth("Войди в аккаунт администратора.");return;}
  if(!$("page-"+name))name="home";
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  $("page-"+name).classList.add("active");
