@@ -326,6 +326,7 @@ body.light .notice{color:#4d3d6d}
 
 <section class="page" id="page-admin">
   <div class="eyebrow">CONTROL CENTER</div><h1 style="font-size:clamp(35px,5vw,55px)">Панель <span class="gradient-text">администратора</span></h1>
+  <button class="btn" onclick="adminLogout()">Выйти из аккаунта</button>
   <div class="notice warning" style="margin:20px 0">Демонстрационная панель без авторизации — не используй её для управления реальными платежами или данными.</div>
   <div class="stats"><div class="stat"><strong id="adminProducts">0</strong><span>Товаров</span></div><div class="stat"><strong id="adminOrders">0</strong><span>Заказов</span></div><div class="stat"><strong id="adminComplaints">0</strong><span>Обращений</span></div><div class="stat"><strong id="adminSales">€0</strong><span>Демо-оборот</span></div></div>
   <div class="section-head"><h2>Модерация продуктов</h2></div><div class="table-wrap"><table><thead><tr><th>Продукт</th><th>Категория</th><th>Цена</th><th>Статус</th><th>Действие</th></tr></thead><tbody id="adminProductRows"></tbody></table></div>
@@ -429,6 +430,16 @@ try {
   "sb_publishable_sOSJFFOUZMp2B01KYgZN7w_Y3EZj-4e"
  );
 } catch (e) { console.error("Supabase init failed", e); }
+async function restoreAdminSession(){
+ if(!neonSupabase)return;
+ try {
+  const {data}=await neonSupabase.auth.getSession();
+  if(!data.session)return;
+  const {data:membership,error}=await neonSupabase.from("admin_users").select("user_id").eq("user_id",data.session.user.id).maybeSingle();
+  if(!error&&membership){adminSession=data.session;isVerifiedAdmin=true;}
+  else await neonSupabase.auth.signOut();
+ } catch(e){console.warn("Could not restore admin session",e);}
+}
 function openAdminAuth(message="Войди, чтобы продолжить.") {
  $("adminAuthModal").style.display="grid";
  $("adminAuthError").style.display=message ? "block" : "none";
@@ -662,7 +673,7 @@ function resetDemo(){
 }
 function renderAll(){renderHome();renderCatalog();renderSeller();renderCart();renderOrders();renderRewards();renderComplaints();renderAdmin();renderBudgetOptions()}
 
-setupCategorySelects();updateFileHint();renderAll();
+setupCategorySelects();updateFileHint();renderAll();restoreAdminSession();
 </script>
 </body>
 </html>
